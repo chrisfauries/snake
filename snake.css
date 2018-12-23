@@ -16,23 +16,23 @@
 }
 
 .game-block{
-	background-color: black;
+	background-color: #3C1053;
 }
 
 .snake{
-	background-color: slategrey;
+	background-color: #EEEEEE;
 }
 
 .apple{
-	background-color: red;
+	background-color: #D29F13;
 }
 
 #score{
-    background-color:darkslategray;
+    background-color:#D29F13;
 	width: 1000px;
 	height: 100px;	
 	margin: 10px auto;
     text-align: center;
     font-size: 80px;
-    color: pink;
+    color: 3C1053;
 }
