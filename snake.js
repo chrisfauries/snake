@@ -182,21 +182,8 @@ function timeStamp(){
     return n;
 }
 
-
-/* Things to add to the game
-
-
--enhance the game over experience
-
--sound effects???
-
--top 10 score board???
-*/
-
-
 var inpInt = document.getElementById("inpInt");
 var btnSave = document.getElementById("btnSave");
-var lsOutput = document.getElementById("lsOutput");
 var userInitials;
 var topScoresArray = [];
 
@@ -205,9 +192,18 @@ btnSave.onclick = function(){
     var status = document.getElementById("status");
     status.innerHTML = "Thanks, " + userInitials + ". Your Initials have been Saved!";
     console.log(userInitials.toUpperCase());
-    setTimeout(function(){snakeSpeed = setInterval(snakeMotion, snakeSpeedValue);},3000);
-    
+    setTimeout(function(){snakeSpeed = setInterval(snakeMotion, snakeSpeedValue);},4000);
+    btnSave.disabled = true;
+    setInterval(function(){ctdn.next();},1000);
 }
+
+function* countdown(){
+    for(k=3;k>=0;k--){
+       yield btnSave.innerHTML= k;
+    }
+}
+
+var ctdn = countdown();
 
 function sortLeaderboard(){
     for(i=0;i<localStorage.length;i++){
