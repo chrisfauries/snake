@@ -64,7 +64,7 @@ function appleCheckandReassign(){
 var currentDirection = 2;
 var bufferedDirection = 2;
 var snakeSpeedValue = 120;
-var snakeSpeed = setInterval(snakeMotion, snakeSpeedValue);
+var snakeSpeed;
 
 //Key Input and Direction Change
 window.addEventListener("keydown", function(e){
@@ -131,7 +131,7 @@ function snakeMotion(){
 function snakeCheckandUpdate(){
     var testValid = document.getElementById("block-number-" + snakeLengthArray[snakeLengthArray.length -1]);
         if(testValid == null || testValid.classList.contains("snake")){
-            gameOver();
+            gameOver(); 
         }else if(testValid.classList.contains("apple")){
             appleLocation.classList.remove("apple");
             appleLocation.classList.add("snake");
@@ -154,17 +154,12 @@ function newSnakeSpeed(){
 //Game Over
 function gameOver(){
     clearInterval(snakeSpeed);
-    setTimeout(reloadGame(), 3000);   //not working
-    /*for(i=0; i<allBlocksArray.length;i++){
-        var blockSegment = document.getElementById("block-number-" + allBlocksArray[0]);
-        if(blockSegment.classList == "snake")
-        blockSegment.classList.remove("snake");
-        blockSegment.classList.remove("apple");
-    }*/
-}
-
-function reloadGame(){
-    location.reload();
+    saveScore();
+    sortLeaderboard();
+    leaderboardBuild();
+    alert("Your Score was: " + points.innerHTML + "\n press 'OK' to restart");
+    setTimeout(function(){ location.reload(); },1000);
+   
 }
 
 //Points
@@ -197,3 +192,60 @@ function timeStamp(){
 
 -top 10 score board???
 */
+
+
+var inpInt = document.getElementById("inpInt");
+var btnSave = document.getElementById("btnSave");
+var lsOutput = document.getElementById("lsOutput");
+var userInitials;
+var topScoresArray = [];
+
+btnSave.onclick = function(){
+    userInitials = inpInt.value.toUpperCase();
+    var status = document.getElementById("status");
+    status.innerHTML = "Thanks, " + userInitials + ". Your Initials have been Saved!";
+    console.log(userInitials.toUpperCase());
+    setTimeout(function(){snakeSpeed = setInterval(snakeMotion, snakeSpeedValue);},3000);
+    
+}
+
+function sortLeaderboard(){
+    for(i=0;i<localStorage.length;i++){
+        var scoreName = localStorage.key(i);
+        var scoreValue = localStorage.getItem(scoreName);
+        topScoresArray[i] = [scoreName, Number(scoreValue)];
+        topScoresArray.sort(Comparator);
+    }
+}
+function Comparator(a, b) {
+   if (b[1] < a[1]) return -1;
+   if (b[1] > a[1]) return 1;
+   return 0;
+ }
+
+function leaderboardBuild(){
+    var leaderboard = document.getElementById("leaderboard");
+    for(i=0; i<topScoresArray.length;i++){
+        var columnDiv = document.createElement("div");
+        leaderboard.append(columnDiv);
+        leaderboard.children[i].setAttribute("id","column-" + (i+1));
+        for(j=0; j<topScoresArray[i].length; j++){
+            var rowSpan = document.createElement("Span");
+            var columnSet = document.getElementById("column-" + (i+1));
+            columnSet.append(rowSpan);
+            columnSet.children[j].setAttribute("id", "span" + (((i+1)*10) + (j+1)));
+            var rowSet = document.getElementById("span" + (((i+1)*10) + (j+1)));
+            rowSet.innerHTML = topScoresArray[i][j];
+            rowSet.classList.add("score-block");
+        }
+    }  
+}
+
+function saveScore(){
+    if(Number(points.innerHTML) > Number(localStorage.getItem(userInitials))){
+        localStorage.setItem(userInitials,points.innerHTML);
+    }
+}
+
+sortLeaderboard();
+leaderboardBuild();

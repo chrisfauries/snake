@@ -36,3 +36,30 @@
     font-size: 80px;
     color: 3C1053;
 }
+
+fieldset, button{
+    padding: 7px;
+    width: 300px;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 24px;
+}
+
+#leaderboard{
+    background-color:#D29F13;
+    width: 1000px;
+	height: 600px;	
+	margin: 10px auto;
+    color: #3C1053;
+    font-size: 60px;
+}
+
+#leaderboard div{
+}
+
+.score-block{
+    display:inline-block;
+    width: 500px;
+    margin: 0 auto;
+    text-align: center;
+}

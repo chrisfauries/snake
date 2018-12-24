@@ -8,6 +8,13 @@
 	<body>
 		<div id="game-container"></div>
         <div id="score">Score: <span id="points">0</span></div>
-		<script src="snake.js"></script>
+        
+        <fieldset>
+            <legend id="status">Enter Initials To Begin:</legend>
+            <input id="inpInt" type="text" maxlength="3" style="text-transform:uppercase" placeholder="Your Initials Here">
+            <button type="button" id="btnSave">Start</button>
+        </fieldset>
+        <div id="leaderboard"></div>
+        <script src="snake.js"></script>
 	</body>
 </html>
