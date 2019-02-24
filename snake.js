@@ -25,58 +25,116 @@ function gameGrid(height,width){
 
 //Snake & Apple Start Position and Render
 
-function Snake(lengthArr) = {
+function Snake(lengthArr, currentDirection, bufferedDirection,speedValue) {
 	
 	this.lengthArr = lengthArr;
-	this.
 	
-	this.shading = function (){
+	this.currentDirection = currentDirection;
+	this.bufferedDirection = bufferedDirection;
+	this.speed;
+	this.speedValue = speedValue;
+	
+	this.shading = () =>{
     for(i=0; i<this.lengthArr.length;i++){
-        snakeSegment = document.getElementById("block-number-" + snakeLengthArray[i]);
+        snakeSegment = document.getElementById("block-number-" + this.lengthArr[i]);
         snakeSegment.classList.add("snake");
     }
+	}
+	
+	this.updateSpeed =() => {
+    this.speedValue -= .015 * this.speedValue;
+    clearInterval(this.speed);
+    this.speed = setInterval(this.motion, this.speedValue);
+	}
+	
+	this.motion = () => {
+    this.directionChange();
+    if(this.currentDirection == 2){
+        this.lengthArr.push(this.lengthArr[this.lengthArr.length -1] +1);
+        this.checkAndUpdate();
+    }
+    if(this.currentDirection == 3){
+        this.lengthArr.push(this.lengthArr[this.lengthArr.length -1] +100);
+        this.checkAndUpdate();
+    }
+    if(this.currentDirection == 1){
+        this.lengthArr.push(this.lengthArr[this.lengthArr.length -1] -100);
+        this.checkAndUpdate();
+    }
+    if(this.currentDirection == 0){
+        this.lengthArr.push(this.lengthArr[this.lengthArr.length -1] -1);
+        this.checkAndUpdate();
+		}
+    this.shading();
+	}
+	
+	this.directionChange = () =>{
+			switch(this.currentDirection){
+					case 0:
+					case 2:
+							if(this.bufferedDirection === 1 || this.bufferedDirection === 3){
+									this.currentDirection = this.bufferedDirection;
+							}
+							break;
+					case 1:
+					case 3:
+							if(this.bufferedDirection === 0 || this.bufferedDirection === 2){
+									this.currentDirection = this.bufferedDirection;
+							}
+							break;
+			}
+	}
+	
+	this.checkAndUpdate = () => {
+    var testValid = document.getElementById("block-number-" + this.lengthArr[this.lengthArr.length -1]);
+        if(testValid == null || testValid.classList.contains("snake")){
+            gameOver.call(this); 
+        }else if(testValid.classList.contains("apple")){
+            gameApple.location.classList.remove("apple");
+//            gameApple.location.classList.add("snake");
+            gameApple.reassign();
+            this.updateSpeed();
+            scoreUpdate.call(this);
+        }else{
+        var snakeSegment = document.getElementById("block-number-" + this.lengthArr[0]);
+        snakeSegment.classList.remove("snake");
+        this.lengthArr.shift();
+        }
 	}
 }
 
 
-function Apple(location,) = {
+function Apple(location) {
   this.location = document.getElementById('block-number-' + location);
 	
-	this.shade = function() {this.location.classList.add('apple')}
+	this.shade = () => {this.location.classList.add('apple')}
 
-	this.reassign = function(){
-    scrambleBlockArray();
+	this.reassign = () => {
+    scramble();
     for(i=0; i<allBlocksArray.length;i++){
         var potentialNewApplePosition = document.getElementById("block-number-" + allBlocksArray[i]);
         if(potentialNewApplePosition.classList.contains("snake")){
             continue;
         }else{
-            appleLocation = document.getElementById("block-number-" + allBlocksArray[i]);
-            appleLocation.classList.add("apple");
+            this.location = document.getElementById("block-number-" + allBlocksArray[i]);
+            this.location.classList.add("apple");
             break;
         }
     }
-}
+		function scramble(){
+    allBlocksArray.sort(function(a, b){
+        return 0.5 - Math.random()});
+		}
+	}
+	
 }
 
-var gameSnake = new Snake([3510,3511,3512,3513,3514,3515,3516,3517]);
+var gameSnake = new Snake([3510,3511,3512,3513,3514,3515,3516,3517],2,2,120);
 var gameApple = new Apple(3030);
 
 gameSnake.shading();
 
 gameApple.shade();
-
-//Apple Position Randomizer
-function scrambleBlockArray(){
-    allBlocksArray.sort(function(a, b){
-        return 0.5 - Math.random()});
-}
-
-//Snake Speed and Direction
-var currentDirection = 2;
-var bufferedDirection = 2;
-var snakeSpeedValue = 120;
-var snakeSpeed;
 
 //Key Input and Direction Change
 window.addEventListener("keydown", function(e){
@@ -84,88 +142,26 @@ window.addEventListener("keydown", function(e){
     switch(key){
         case 37:
             e.preventDefault();
-            bufferedDirection = 0;
+            gameSnake.bufferedDirection = 0;
             break;
         case 38:
             e.preventDefault();
-            bufferedDirection = 1;
+            gameSnake.bufferedDirection = 1;
             break;
         case 39:
             e.preventDefault();
-            bufferedDirection = 2;
+            gameSnake.bufferedDirection = 2;
             break;
         case 40:
             e.preventDefault();
-            bufferedDirection = 3;
+            gameSnake.bufferedDirection = 3;
             break;
     }
 });
 
-function directionChange(){
-    switch(currentDirection){
-        case 0:
-        case 2:
-            if(bufferedDirection === 1 || bufferedDirection === 3){
-                currentDirection = bufferedDirection;
-            }
-            break;
-        case 1:
-        case 3:
-            if(bufferedDirection === 0 || bufferedDirection === 2){
-                currentDirection = bufferedDirection;
-            }
-            break;
-    }
-}
-
-
-function snakeMotion(){
-    directionChange();
-    if(currentDirection == 2){
-        snakeLengthArray.push(snakeLengthArray[snakeLengthArray.length -1] +1);
-        snakeCheckandUpdate();
-    }
-    if(currentDirection == 3){
-        snakeLengthArray.push(snakeLengthArray[snakeLengthArray.length -1] +100);
-        snakeCheckandUpdate();
-    }
-    if(currentDirection == 1){
-        snakeLengthArray.push(snakeLengthArray[snakeLengthArray.length -1] -100);
-        snakeCheckandUpdate();
-    }
-    if(currentDirection == 0){
-        snakeLengthArray.push(snakeLengthArray[snakeLengthArray.length -1] -1);
-        snakeCheckandUpdate();
-    }
-    snakeShading();
-}
-
-function snakeCheckandUpdate(){
-    var testValid = document.getElementById("block-number-" + snakeLengthArray[snakeLengthArray.length -1]);
-        if(testValid == null || testValid.classList.contains("snake")){
-            gameOver(); 
-        }else if(testValid.classList.contains("apple")){
-            appleLocation.classList.remove("apple");
-            appleLocation.classList.add("snake");
-            appleCheckandReassign();
-            newSnakeSpeed();
-            scoreUpdate();
-        }else{
-        var snakeSegment = document.getElementById("block-number-" + snakeLengthArray[0]);
-        snakeSegment.classList.remove("snake");
-        snakeLengthArray.shift();
-        }
-}
-
-function newSnakeSpeed(){
-    snakeSpeedValue -= .015 * snakeSpeedValue;
-    clearInterval(snakeSpeed);
-    snakeSpeed = setInterval(snakeMotion, snakeSpeedValue);
-}
-
 //Game Over
 function gameOver(){
-    clearInterval(snakeSpeed);
+    clearInterval(this.speed);
     saveScore();
     sortLeaderboard();
     leaderboardBuild();
@@ -180,8 +176,8 @@ var lastTime = timeStamp();
 
 function scoreUpdate(){
     currentScore = Number(points.innerHTML);
-    valueAddedSnake = Math.pow(snakeLengthArray.length, 2);
-    valueAddedSpeed = Math.pow((120 / snakeSpeedValue), 3);
+    valueAddedSnake = Math.pow(this.lengthArr.length, 2);
+    valueAddedSpeed = Math.pow((120 / this.speedValue), 3);
     valueAddedTime = 5000 / (timeStamp() - lastTime);
     lastTime = timeStamp();
     currentScore += Math.round(valueAddedSnake * valueAddedSpeed * valueAddedTime);
@@ -204,7 +200,7 @@ btnSave.onclick = function(){
     var status = document.getElementById("status");
     status.innerHTML = "Thanks, " + userInitials + ". Your Initials have been Saved!";
     console.log(userInitials.toUpperCase());
-    setTimeout(function(){snakeSpeed = setInterval(snakeMotion, snakeSpeedValue);},4000);
+    setTimeout(function(){gameSnake.speed = setInterval(gameSnake.motion, gameSnake.speedValue);},4000);
     btnSave.disabled = true;
     setInterval(function(){ctdn.next();},1000);
 }
