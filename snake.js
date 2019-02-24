@@ -180,14 +180,8 @@ function getScores (){
 		var allScores = []
 		for(i=0; i< scores.docs.length; i++) {
 			allScores[i] = [scores.docs[i].data().init, scores.docs[i].data().score];
-			allScores.sort(comparator);
-
-			function comparator(a, b) {
-				if (b[1] < a[1]) return -1;
-				if (b[1] > a[1]) return 1;
-				return 0;
-			}
 		}
+		allScores.sort((a, b) => b[1] - a[1]);
 		leaderboardBuild(allScores);
 	});
 }
@@ -242,7 +236,7 @@ var ctdn = countdown();
 
 function leaderboardBuild(arr){
     var leaderboard = document.getElementById("leaderboard");
-    for(i=0; i<arr.length;i++){
+    for(i=0; i< 10;i++){
         var columnDiv = document.createElement("div");
         leaderboard.append(columnDiv);
         leaderboard.children[i].setAttribute("id","column-" + (i+1));
