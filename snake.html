@@ -15,6 +15,21 @@
             <button type="button" id="btnSave">Start</button>
         </fieldset>
         <div id="leaderboard"></div>
-        <script src="snake.js"></script>
+			<script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-app.js"></script>
+			<script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-firestore.js"></script>
+			<script>
+				// Initialize Firebase
+				var config = {
+					apiKey: "AIzaSyAy80WzApMEaSu85P0Z4XYAjBQxsUp--4I",
+					authDomain: "snake-game-1bf7b.firebaseapp.com",
+					databaseURL: "https://snake-game-1bf7b.firebaseio.com",
+					projectId: "snake-game-1bf7b",
+					storageBucket: "snake-game-1bf7b.appspot.com",
+					messagingSenderId: "609330332256"
+				};
+				firebase.initializeApp(config);
+				const db = firebase.firestore();
+			</script>
+       <script src="snake.js"></script>
 	</body>
 </html>

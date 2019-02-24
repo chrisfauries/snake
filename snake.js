@@ -162,13 +162,40 @@ window.addEventListener("keydown", function(e){
 //Game Over
 function gameOver(){
     clearInterval(this.speed);
-    saveScore();
-    sortLeaderboard();
-    leaderboardBuild();
+		db.collection('Scores').add({
+			init: userInitials,
+			time: Date().valueOf(),
+			score: points.innerHTML
+		});
+		getScores();
     alert("Your Score was: " + points.innerHTML + "\n press 'OK' to restart");
     setTimeout(function(){ location.reload(); },1000);
    
 }
+
+
+//FireStore
+function getScores (){
+	db.collection('Scores').get().then((scores) => {
+		var allScores = []
+		for(i=0; i< scores.docs.length; i++) {
+			allScores[i] = [scores.docs[i].data().init, scores.docs[i].data().score];
+			allScores.sort(comparator);
+
+			function comparator(a, b) {
+				if (b[1] < a[1]) return -1;
+				if (b[1] > a[1]) return 1;
+				return 0;
+			}
+		}
+		leaderboardBuild(allScores);
+	});
+}
+
+getScores();
+
+
+
 
 //Points
 var points = document.getElementById("points");
@@ -193,7 +220,7 @@ function timeStamp(){
 var inpInt = document.getElementById("inpInt");
 var btnSave = document.getElementById("btnSave");
 var userInitials;
-var topScoresArray = [];
+
 
 btnSave.onclick = function(){
     userInitials = inpInt.value.toUpperCase();
@@ -213,43 +240,21 @@ function* countdown(){
 
 var ctdn = countdown();
 
-function sortLeaderboard(){
-    for(i=0;i<localStorage.length;i++){
-        var scoreName = localStorage.key(i);
-        var scoreValue = localStorage.getItem(scoreName);
-        topScoresArray[i] = [scoreName, Number(scoreValue)];
-        topScoresArray.sort(Comparator);
-    }
-}
-function Comparator(a, b) {
-   if (b[1] < a[1]) return -1;
-   if (b[1] > a[1]) return 1;
-   return 0;
- }
-
-function leaderboardBuild(){
+function leaderboardBuild(arr){
     var leaderboard = document.getElementById("leaderboard");
-    for(i=0; i<topScoresArray.length;i++){
+    for(i=0; i<arr.length;i++){
         var columnDiv = document.createElement("div");
         leaderboard.append(columnDiv);
         leaderboard.children[i].setAttribute("id","column-" + (i+1));
-        for(j=0; j<topScoresArray[i].length; j++){
+        for(j=0; j<arr[i].length; j++){
             var rowSpan = document.createElement("Span");
             var columnSet = document.getElementById("column-" + (i+1));
             columnSet.append(rowSpan);
             columnSet.children[j].setAttribute("id", "span" + (((i+1)*10) + (j+1)));
             var rowSet = document.getElementById("span" + (((i+1)*10) + (j+1)));
-            rowSet.innerHTML = topScoresArray[i][j];
+            rowSet.innerHTML = arr[i][j];
             rowSet.classList.add("score-block");
         }
     }  
 }
 
-function saveScore(){
-    if(Number(points.innerHTML) > Number(localStorage.getItem(userInitials))){
-        localStorage.setItem(userInitials,points.innerHTML);
-    }
-}
-
-sortLeaderboard();
-leaderboardBuild();
