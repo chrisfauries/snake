@@ -24,29 +24,27 @@ function gameGrid(height,width){
 }
 
 //Snake & Apple Start Position and Render
-var appleLocation = document.getElementById("block-number-3030");
-var snakeLengthArray = [3510,3511,3512,3513,3514,3515,3516,3517];
 
-snakeShading();
-
-appleLocation.classList.add("apple");
-
-function snakeShading(){
-    for(i=0; i<snakeLengthArray.length;i++){
+function Snake(lengthArr) = {
+	
+	this.lengthArr = lengthArr;
+	this.
+	
+	this.shading = function (){
+    for(i=0; i<this.lengthArr.length;i++){
         snakeSegment = document.getElementById("block-number-" + snakeLengthArray[i]);
         snakeSegment.classList.add("snake");
     }
+	}
 }
 
-snakeShading();
 
-//Apple Position Randomizer
-function scrambleBlockArray(){
-    allBlocksArray.sort(function(a, b){
-        return 0.5 - Math.random()});
-}
+function Apple(location,) = {
+  this.location = document.getElementById('block-number-' + location);
+	
+	this.shade = function() {this.location.classList.add('apple')}
 
-function appleCheckandReassign(){
+	this.reassign = function(){
     scrambleBlockArray();
     for(i=0; i<allBlocksArray.length;i++){
         var potentialNewApplePosition = document.getElementById("block-number-" + allBlocksArray[i]);
@@ -58,6 +56,20 @@ function appleCheckandReassign(){
             break;
         }
     }
+}
+}
+
+var gameSnake = new Snake([3510,3511,3512,3513,3514,3515,3516,3517]);
+var gameApple = new Apple(3030);
+
+gameSnake.shading();
+
+gameApple.shade();
+
+//Apple Position Randomizer
+function scrambleBlockArray(){
+    allBlocksArray.sort(function(a, b){
+        return 0.5 - Math.random()});
 }
 
 //Snake Speed and Direction
