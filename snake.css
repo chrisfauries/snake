@@ -4,18 +4,22 @@
 	margin: 0px;
 }
 
+body {
+	background-color: #eee;
+}
 #snake-content {
 	display: block;
 	width: 80%;
 	height: 1200px;
 	margin: 0 auto;
+	zoom: 75%;
 }
 
 #game-container{
 	position: relative;
 	padding-top: 70px;
 	float: left;
-	background-color: white;
+	background-color: #eee;
 	width: 1000px;
 	max-width: 50%;
 	height: 1000px;	
