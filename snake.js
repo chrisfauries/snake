@@ -2,7 +2,7 @@ var gameContainer = document.getElementById("game-container");
 var allBlocksArray = [];
 
 //Game Grid
-gameGrid(40,40);
+gameGrid(30,30);
 
 function gameGrid(height,width){
 	for(i=0; i<height; i++){
@@ -74,12 +74,14 @@ function Snake(lengthArr, currentDirection, bufferedDirection,speedValue) {
 					case 2:
 							if(this.bufferedDirection === 1 || this.bufferedDirection === 3){
 									this.currentDirection = this.bufferedDirection;
+									soundChangeDirection.play();
 							}
 							break;
 					case 1:
 					case 3:
 							if(this.bufferedDirection === 0 || this.bufferedDirection === 2){
 									this.currentDirection = this.bufferedDirection;
+									soundChangeDirection.play();
 							}
 							break;
 			}
@@ -93,6 +95,7 @@ function Snake(lengthArr, currentDirection, bufferedDirection,speedValue) {
             gameApple.location.classList.remove("apple");
 //            gameApple.location.classList.add("snake");
             gameApple.reassign();
+						soundGrabApple.play();
             this.updateSpeed();
             scoreUpdate.call(this);
         }else{
@@ -129,8 +132,8 @@ function Apple(location) {
 	
 }
 
-var gameSnake = new Snake([3510,3511,3512,3513,3514,3515,3516,3517],2,2,120);
-var gameApple = new Apple(3030);
+var gameSnake = new Snake([2210,2211,2212,2213,2214,2215,2216,2217],2,2,120);
+var gameApple = new Apple(2020);
 
 gameSnake.shading();
 
@@ -162,11 +165,16 @@ window.addEventListener("keydown", function(e){
 //Game Over
 function gameOver(){
     clearInterval(this.speed);
-		db.collection('Scores').add({
-			init: userInitials,
-			time: Date().valueOf(),
-			score: points.innerHTML
-		});
+		soundDeath.play();
+		soundBackgoundMusic.stop();
+		var num15 = document.getElementById('span152');
+		if(Number(points.innerHTML) >= (Number(num15.innerHTML) /2)) {
+			db.collection('Scores').add({
+				init: userInitials,
+				time: Date().valueOf(),
+				score: points.innerHTML
+			});
+		}
 		getScores();
     alert("Your Score was: " + points.innerHTML + "\n press 'OK' to restart");
     setTimeout(function(){ location.reload(); },1000);
@@ -258,12 +266,47 @@ function countdown() {
 	var countdownTimer = document.querySelector('#countdown');
 	countdownTimer.style.display = 'block';
 	var count = 3;
-	setInterval(function(){
-								if(countdownTimer.innerHTML === '0') {
+	var counter = setInterval(function(){								
+								if(countdownTimer.innerHTML === 'Begin!') {
 									countdownTimer.style.display = 'none';
+									soundBackgoundMusic.play();
 									clearInterval(counter);
+								}else if(countdownTimer.innerHTML === '1') {
+									soundCountdown.stop();
+									countdownTimer.style.fontSize = '600px'
+									countdownTimer.innerHTML = 'Begin!';
+									soundCountdown.sound.currentTime = 0;
+									soundCountdown.play();
+								} else {
+									soundCountdown.stop();
+									countdownTimer.innerHTML = count;
+									soundCountdown.sound.currentTime = 0;
+									soundCountdown.play();
+									count--;
 								}
-								countdownTimer.innerHTML = count; 
-								count--;
 							}, 1000);
 }
+
+
+//Sound Effects
+
+function Sound(src, loop, volume) {
+  this.sound = document.createElement("audio");
+  this.sound.src = src;
+	this.sound.loop = loop;
+	this.sound.volume = volume;
+  this.sound.style.display = "none";
+  document.body.appendChild(this.sound);
+  this.play = function(){
+    this.sound.play();
+  }
+  this.stop = function(){
+    this.sound.pause();
+  }
+}
+
+var soundChangeDirection = new Sound('sound/changeDirection.wav', false, .3);
+var soundGrabApple = new Sound('sound/grabApple.wav', false, .2);
+var soundBackgoundMusic = new Sound('sound/background.mp3', true, .1);
+var soundDeath = new Sound('sound/death.wav', false, .5);
+var soundCountdown = new Sound('sound/countdown.mp3', false, .5);
