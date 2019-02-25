@@ -96,6 +96,8 @@ function Snake(lengthArr, currentDirection, bufferedDirection,speedValue) {
 //            gameApple.location.classList.add("snake");
             gameApple.reassign();
 						soundGrabApple.play();
+						soundBackgoundMusic.sound.playbackRate = (soundBackgoundMusic.sound.playbackRate + .005).toFixed(4);
+						console.log(soundBackgoundMusic.sound.playbackRate);
             this.updateSpeed();
             scoreUpdate.call(this);
         }else{
