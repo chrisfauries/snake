@@ -216,27 +216,12 @@ var btnSave = document.getElementById("btnSave");
 var userInitials;
 
 
-btnSave.onclick = function(){
-    userInitials = inpInt.value.toUpperCase();
-    var status = document.getElementById("status");
-    status.innerHTML = "Thanks, " + userInitials + ". Your Initials have been Saved!";
-    console.log(userInitials.toUpperCase());
-    setTimeout(function(){gameSnake.speed = setInterval(gameSnake.motion, gameSnake.speedValue);},4000);
-    btnSave.disabled = true;
-    setInterval(function(){ctdn.next();},1000);
-}
 
-function* countdown(){
-    for(k=3;k>=0;k--){
-       yield btnSave.innerHTML= k;
-    }
-}
 
-var ctdn = countdown();
 
 function leaderboardBuild(arr){
     var leaderboard = document.getElementById("leaderboard");
-    for(i=0; i< 10;i++){
+    for(i=0; i< 15;i++){
         var columnDiv = document.createElement("div");
         leaderboard.append(columnDiv);
         leaderboard.children[i].setAttribute("id","column-" + (i+1));
@@ -252,3 +237,33 @@ function leaderboardBuild(arr){
     }  
 }
 
+
+function viewNoStart() {
+	document.querySelector('#pop-up-bg').style.display = 'none';
+	document.querySelector('#pop-up').style.display = 'none';
+}
+
+function startGame() {
+	var init = document.querySelector('#inpInt');
+	if(init.value.length === 3) {
+		document.querySelector('#pop-up-bg').style.animation= 'fadeOut 3s ease forwards';
+		document.querySelector('#pop-up').style.display = 'none';
+		userInitials = inpInt.value.toUpperCase();
+    setTimeout(function(){gameSnake.speed = setInterval(gameSnake.motion, gameSnake.speedValue);},5000);
+		countdown();
+	}
+}
+
+function countdown() {
+	var countdownTimer = document.querySelector('#countdown');
+	countdownTimer.style.display = 'block';
+	var count = 3;
+	setInterval(function(){
+								if(countdownTimer.innerHTML === '0') {
+									countdownTimer.style.display = 'none';
+									clearInterval(counter);
+								}
+								countdownTimer.innerHTML = count; 
+								count--;
+							}, 1000);
+}
