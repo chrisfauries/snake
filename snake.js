@@ -2,7 +2,7 @@ var gameContainer = document.getElementById("game-container");
 var allBlocksArray = [];
 
 //Game Grid
-gameGrid(40,40);
+gameGrid(30,30);
 
 function gameGrid(height,width){
 	for(i=0; i<height; i++){
@@ -24,47 +24,120 @@ function gameGrid(height,width){
 }
 
 //Snake & Apple Start Position and Render
-var appleLocation = document.getElementById("block-number-3030");
-var snakeLengthArray = [3510,3511,3512,3513,3514,3515,3516,3517];
 
-snakeShading();
-
-appleLocation.classList.add("apple");
-
-function snakeShading(){
-    for(i=0; i<snakeLengthArray.length;i++){
-        snakeSegment = document.getElementById("block-number-" + snakeLengthArray[i]);
+function Snake(lengthArr, currentDirection, bufferedDirection,speedValue) {
+	
+	this.lengthArr = lengthArr;
+	
+	this.currentDirection = currentDirection;
+	this.bufferedDirection = bufferedDirection;
+	this.speed;
+	this.speedValue = speedValue;
+	
+	this.shading = () =>{
+    for(i=0; i<this.lengthArr.length;i++){
+        snakeSegment = document.getElementById("block-number-" + this.lengthArr[i]);
         snakeSegment.classList.add("snake");
     }
+	}
+	
+	this.updateSpeed =() => {
+    this.speedValue -= .015 * this.speedValue;
+    clearInterval(this.speed);
+    this.speed = setInterval(this.motion, this.speedValue);
+	}
+	
+	this.motion = () => {
+    this.directionChange();
+    if(this.currentDirection == 2){
+        this.lengthArr.push(this.lengthArr[this.lengthArr.length -1] +1);
+        this.checkAndUpdate();
+    }
+    if(this.currentDirection == 3){
+        this.lengthArr.push(this.lengthArr[this.lengthArr.length -1] +100);
+        this.checkAndUpdate();
+    }
+    if(this.currentDirection == 1){
+        this.lengthArr.push(this.lengthArr[this.lengthArr.length -1] -100);
+        this.checkAndUpdate();
+    }
+    if(this.currentDirection == 0){
+        this.lengthArr.push(this.lengthArr[this.lengthArr.length -1] -1);
+        this.checkAndUpdate();
+		}
+    this.shading();
+	}
+	
+	this.directionChange = () =>{
+			switch(this.currentDirection){
+					case 0:
+					case 2:
+							if(this.bufferedDirection === 1 || this.bufferedDirection === 3){
+									this.currentDirection = this.bufferedDirection;
+									soundChangeDirection.play();
+							}
+							break;
+					case 1:
+					case 3:
+							if(this.bufferedDirection === 0 || this.bufferedDirection === 2){
+									this.currentDirection = this.bufferedDirection;
+									soundChangeDirection.play();
+							}
+							break;
+			}
+	}
+	
+	this.checkAndUpdate = () => {
+    var testValid = document.getElementById("block-number-" + this.lengthArr[this.lengthArr.length -1]);
+        if(testValid == null || testValid.classList.contains("snake")){
+            gameOver.call(this); 
+        }else if(testValid.classList.contains("apple")){
+            gameApple.location.classList.remove("apple");
+//            gameApple.location.classList.add("snake");
+            gameApple.reassign();
+						soundGrabApple.play();
+            this.updateSpeed();
+            scoreUpdate.call(this);
+        }else{
+        var snakeSegment = document.getElementById("block-number-" + this.lengthArr[0]);
+        snakeSegment.classList.remove("snake");
+        this.lengthArr.shift();
+        }
+	}
 }
 
-snakeShading();
 
-//Apple Position Randomizer
-function scrambleBlockArray(){
-    allBlocksArray.sort(function(a, b){
-        return 0.5 - Math.random()});
-}
+function Apple(location) {
+  this.location = document.getElementById('block-number-' + location);
+	
+	this.shade = () => {this.location.classList.add('apple')}
 
-function appleCheckandReassign(){
-    scrambleBlockArray();
+	this.reassign = () => {
+    scramble();
     for(i=0; i<allBlocksArray.length;i++){
         var potentialNewApplePosition = document.getElementById("block-number-" + allBlocksArray[i]);
         if(potentialNewApplePosition.classList.contains("snake")){
             continue;
         }else{
-            appleLocation = document.getElementById("block-number-" + allBlocksArray[i]);
-            appleLocation.classList.add("apple");
+            this.location = document.getElementById("block-number-" + allBlocksArray[i]);
+            this.location.classList.add("apple");
             break;
         }
     }
+		function scramble(){
+    allBlocksArray.sort(function(a, b){
+        return 0.5 - Math.random()});
+		}
+	}
+	
 }
 
-//Snake Speed and Direction
-var currentDirection = 2;
-var bufferedDirection = 2;
-var snakeSpeedValue = 120;
-var snakeSpeed;
+var gameSnake = new Snake([2210,2211,2212,2213,2214,2215,2216,2217],2,2,120);
+var gameApple = new Apple(2020);
+
+gameSnake.shading();
+
+gameApple.shade();
 
 //Key Input and Direction Change
 window.addEventListener("keydown", function(e){
@@ -72,95 +145,59 @@ window.addEventListener("keydown", function(e){
     switch(key){
         case 37:
             e.preventDefault();
-            bufferedDirection = 0;
+            gameSnake.bufferedDirection = 0;
             break;
         case 38:
             e.preventDefault();
-            bufferedDirection = 1;
+            gameSnake.bufferedDirection = 1;
             break;
         case 39:
             e.preventDefault();
-            bufferedDirection = 2;
+            gameSnake.bufferedDirection = 2;
             break;
         case 40:
             e.preventDefault();
-            bufferedDirection = 3;
+            gameSnake.bufferedDirection = 3;
             break;
     }
 });
 
-function directionChange(){
-    switch(currentDirection){
-        case 0:
-        case 2:
-            if(bufferedDirection === 1 || bufferedDirection === 3){
-                currentDirection = bufferedDirection;
-            }
-            break;
-        case 1:
-        case 3:
-            if(bufferedDirection === 0 || bufferedDirection === 2){
-                currentDirection = bufferedDirection;
-            }
-            break;
-    }
-}
-
-
-function snakeMotion(){
-    directionChange();
-    if(currentDirection == 2){
-        snakeLengthArray.push(snakeLengthArray[snakeLengthArray.length -1] +1);
-        snakeCheckandUpdate();
-    }
-    if(currentDirection == 3){
-        snakeLengthArray.push(snakeLengthArray[snakeLengthArray.length -1] +100);
-        snakeCheckandUpdate();
-    }
-    if(currentDirection == 1){
-        snakeLengthArray.push(snakeLengthArray[snakeLengthArray.length -1] -100);
-        snakeCheckandUpdate();
-    }
-    if(currentDirection == 0){
-        snakeLengthArray.push(snakeLengthArray[snakeLengthArray.length -1] -1);
-        snakeCheckandUpdate();
-    }
-    snakeShading();
-}
-
-function snakeCheckandUpdate(){
-    var testValid = document.getElementById("block-number-" + snakeLengthArray[snakeLengthArray.length -1]);
-        if(testValid == null || testValid.classList.contains("snake")){
-            gameOver(); 
-        }else if(testValid.classList.contains("apple")){
-            appleLocation.classList.remove("apple");
-            appleLocation.classList.add("snake");
-            appleCheckandReassign();
-            newSnakeSpeed();
-            scoreUpdate();
-        }else{
-        var snakeSegment = document.getElementById("block-number-" + snakeLengthArray[0]);
-        snakeSegment.classList.remove("snake");
-        snakeLengthArray.shift();
-        }
-}
-
-function newSnakeSpeed(){
-    snakeSpeedValue -= .015 * snakeSpeedValue;
-    clearInterval(snakeSpeed);
-    snakeSpeed = setInterval(snakeMotion, snakeSpeedValue);
-}
-
 //Game Over
 function gameOver(){
-    clearInterval(snakeSpeed);
-    saveScore();
-    sortLeaderboard();
-    leaderboardBuild();
+    clearInterval(this.speed);
+		soundDeath.play();
+		soundBackgoundMusic.stop();
+		var num15 = document.getElementById('span152');
+		if(Number(points.innerHTML) >= (Number(num15.innerHTML) /2)) {
+			db.collection('Scores').add({
+				init: userInitials,
+				time: Date().valueOf(),
+				score: points.innerHTML
+			});
+		}
+		getScores();
     alert("Your Score was: " + points.innerHTML + "\n press 'OK' to restart");
     setTimeout(function(){ location.reload(); },1000);
    
 }
+
+
+//FireStore
+function getScores (){
+	db.collection('Scores').get().then((scores) => {
+		var allScores = []
+		for(i=0; i< scores.docs.length; i++) {
+			allScores[i] = [scores.docs[i].data().init, scores.docs[i].data().score];
+		}
+		allScores.sort((a, b) => b[1] - a[1]);
+		leaderboardBuild(allScores);
+	});
+}
+
+getScores();
+
+
+
 
 //Points
 var points = document.getElementById("points");
@@ -168,8 +205,8 @@ var lastTime = timeStamp();
 
 function scoreUpdate(){
     currentScore = Number(points.innerHTML);
-    valueAddedSnake = Math.pow(snakeLengthArray.length, 2);
-    valueAddedSpeed = Math.pow((120 / snakeSpeedValue), 3);
+    valueAddedSnake = Math.pow(this.lengthArr.length, 2);
+    valueAddedSpeed = Math.pow((120 / this.speedValue), 3);
     valueAddedTime = 5000 / (timeStamp() - lastTime);
     lastTime = timeStamp();
     currentScore += Math.round(valueAddedSnake * valueAddedSpeed * valueAddedTime);
@@ -185,63 +222,91 @@ function timeStamp(){
 var inpInt = document.getElementById("inpInt");
 var btnSave = document.getElementById("btnSave");
 var userInitials;
-var topScoresArray = [];
 
-btnSave.onclick = function(){
-    userInitials = inpInt.value.toUpperCase();
-    var status = document.getElementById("status");
-    status.innerHTML = "Thanks, " + userInitials + ". Your Initials have been Saved!";
-    console.log(userInitials.toUpperCase());
-    setTimeout(function(){snakeSpeed = setInterval(snakeMotion, snakeSpeedValue);},4000);
-    btnSave.disabled = true;
-    setInterval(function(){ctdn.next();},1000);
-}
 
-function* countdown(){
-    for(k=3;k>=0;k--){
-       yield btnSave.innerHTML= k;
-    }
-}
 
-var ctdn = countdown();
 
-function sortLeaderboard(){
-    for(i=0;i<localStorage.length;i++){
-        var scoreName = localStorage.key(i);
-        var scoreValue = localStorage.getItem(scoreName);
-        topScoresArray[i] = [scoreName, Number(scoreValue)];
-        topScoresArray.sort(Comparator);
-    }
-}
-function Comparator(a, b) {
-   if (b[1] < a[1]) return -1;
-   if (b[1] > a[1]) return 1;
-   return 0;
- }
 
-function leaderboardBuild(){
+function leaderboardBuild(arr){
     var leaderboard = document.getElementById("leaderboard");
-    for(i=0; i<topScoresArray.length;i++){
+    for(i=0; i< 15;i++){
         var columnDiv = document.createElement("div");
         leaderboard.append(columnDiv);
         leaderboard.children[i].setAttribute("id","column-" + (i+1));
-        for(j=0; j<topScoresArray[i].length; j++){
+        for(j=0; j<arr[i].length; j++){
             var rowSpan = document.createElement("Span");
             var columnSet = document.getElementById("column-" + (i+1));
             columnSet.append(rowSpan);
             columnSet.children[j].setAttribute("id", "span" + (((i+1)*10) + (j+1)));
             var rowSet = document.getElementById("span" + (((i+1)*10) + (j+1)));
-            rowSet.innerHTML = topScoresArray[i][j];
+            rowSet.innerHTML = arr[i][j];
             rowSet.classList.add("score-block");
         }
     }  
 }
 
-function saveScore(){
-    if(Number(points.innerHTML) > Number(localStorage.getItem(userInitials))){
-        localStorage.setItem(userInitials,points.innerHTML);
-    }
+
+function viewNoStart() {
+	document.querySelector('#pop-up-bg').style.display = 'none';
+	document.querySelector('#pop-up').style.display = 'none';
 }
 
-sortLeaderboard();
-leaderboardBuild();
+function startGame() {
+	var init = document.querySelector('#inpInt');
+	if(init.value.length === 3) {
+		document.querySelector('#pop-up-bg').style.animation= 'fadeOut 3s ease forwards';
+		document.querySelector('#pop-up').style.display = 'none';
+		userInitials = inpInt.value.toUpperCase();
+    setTimeout(function(){gameSnake.speed = setInterval(gameSnake.motion, gameSnake.speedValue);},5000);
+		countdown();
+	}
+}
+
+function countdown() {
+	var countdownTimer = document.querySelector('#countdown');
+	countdownTimer.style.display = 'block';
+	var count = 3;
+	var counter = setInterval(function(){								
+								if(countdownTimer.innerHTML === 'Begin!') {
+									countdownTimer.style.display = 'none';
+									soundBackgoundMusic.play();
+									clearInterval(counter);
+								}else if(countdownTimer.innerHTML === '1') {
+									soundCountdown.stop();
+									countdownTimer.style.fontSize = '600px'
+									countdownTimer.innerHTML = 'Begin!';
+									soundCountdown.sound.currentTime = 0;
+									soundCountdown.play();
+								} else {
+									soundCountdown.stop();
+									countdownTimer.innerHTML = count;
+									soundCountdown.sound.currentTime = 0;
+									soundCountdown.play();
+									count--;
+								}
+							}, 1000);
+}
+
+
+//Sound Effects
+
+function Sound(src, loop, volume) {
+  this.sound = document.createElement("audio");
+  this.sound.src = src;
+	this.sound.loop = loop;
+	this.sound.volume = volume;
+  this.sound.style.display = "none";
+  document.body.appendChild(this.sound);
+  this.play = function(){
+    this.sound.play();
+  }
+  this.stop = function(){
+    this.sound.pause();
+  }
+}
+
+var soundChangeDirection = new Sound('sound/changeDirection.wav', false, .3);
+var soundGrabApple = new Sound('sound/grabApple.wav', false, .2);
+var soundBackgoundMusic = new Sound('sound/background.mp3', true, .1);
+var soundDeath = new Sound('sound/death.wav', false, .5);
+var soundCountdown = new Sound('sound/countdown.mp3', false, .5);
