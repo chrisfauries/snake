@@ -133,8 +133,16 @@ function Apple(location) {
 	
 }
 
-var gameSnake = new Snake([2210,2211,2212,2213,2214,2215,2216,2217],'right','right',1200);
+var gameSnake = new Snake([2210,2211,2212,2213,2214,2215,2216,2217],'right','right', speedScreenSize());
 var gameApple = new Apple(2020);
+
+function speedScreenSize () {
+	if(window.innerWidth < 1000) {
+		return 300;
+	} else {
+		return 120;
+	}
+}
 
 gameSnake.shading();
 
@@ -338,7 +346,7 @@ function mute() {
 
 
 //MobileControls
-var swipeZone = document.getElementById('game-container');
+var swipeZone = document;
 swipedetect(swipeZone, function(swipedir){
 	if(swipedir !== 'none') {
 		gameSnake.bufferedDirection = swipedir;
@@ -369,12 +377,12 @@ function swipedetect(el, callback){
         startX = touchobj.pageX
         startY = touchobj.pageY
         startTime = new Date().getTime() // record time when finger first makes contact with surface
-        e.preventDefault()
-    }, false)
+//        e.preventDefault()
+    }, { passive: false })
   
     touchsurface.addEventListener('touchmove', function(e){
         e.preventDefault() // prevent scrolling when inside DIV
-    }, false)
+    }, { passive: false })
   
     touchsurface.addEventListener('touchend', function(e){
         var touchobj = e.changedTouches[0]
@@ -390,6 +398,6 @@ function swipedetect(el, callback){
             }
         }
         handleswipe(swipedir)
-        e.preventDefault()
-    }, false)
+//        e.preventDefault()
+    }, { passive: false })
 }
