@@ -49,19 +49,19 @@ function Snake(lengthArr, currentDirection, bufferedDirection,speedValue) {
 	
 	this.motion = () => {
     this.directionChange();
-    if(this.currentDirection == 2){
+    if(this.currentDirection == 'right'){
         this.lengthArr.push(this.lengthArr[this.lengthArr.length -1] +1);
         this.checkAndUpdate();
     }
-    if(this.currentDirection == 3){
+    if(this.currentDirection == 'down'){
         this.lengthArr.push(this.lengthArr[this.lengthArr.length -1] +100);
         this.checkAndUpdate();
     }
-    if(this.currentDirection == 1){
+    if(this.currentDirection == 'up'){
         this.lengthArr.push(this.lengthArr[this.lengthArr.length -1] -100);
         this.checkAndUpdate();
     }
-    if(this.currentDirection == 0){
+    if(this.currentDirection == 'left'){
         this.lengthArr.push(this.lengthArr[this.lengthArr.length -1] -1);
         this.checkAndUpdate();
 		}
@@ -70,16 +70,16 @@ function Snake(lengthArr, currentDirection, bufferedDirection,speedValue) {
 	
 	this.directionChange = () =>{
 			switch(this.currentDirection){
-					case 0:
-					case 2:
-							if(this.bufferedDirection === 1 || this.bufferedDirection === 3){
+					case 'left':
+					case 'right':
+							if(this.bufferedDirection === 'up' || this.bufferedDirection === 'down'){
 									this.currentDirection = this.bufferedDirection;
 									soundChangeDirection.play();
 							}
 							break;
-					case 1:
-					case 3:
-							if(this.bufferedDirection === 0 || this.bufferedDirection === 2){
+					case 'up':
+					case 'down':
+							if(this.bufferedDirection === 'left' || this.bufferedDirection === 'right'){
 									this.currentDirection = this.bufferedDirection;
 									soundChangeDirection.play();
 							}
@@ -133,7 +133,7 @@ function Apple(location) {
 	
 }
 
-var gameSnake = new Snake([2210,2211,2212,2213,2214,2215,2216,2217],2,2,120);
+var gameSnake = new Snake([2210,2211,2212,2213,2214,2215,2216,2217],'right','right',1200);
 var gameApple = new Apple(2020);
 
 gameSnake.shading();
@@ -146,19 +146,19 @@ window.addEventListener("keydown", function(e){
     switch(key){
         case 37:
             e.preventDefault();
-            gameSnake.bufferedDirection = 0;
+            gameSnake.bufferedDirection = 'left';
             break;
         case 38:
             e.preventDefault();
-            gameSnake.bufferedDirection = 1;
+            gameSnake.bufferedDirection = 'up';
             break;
         case 39:
             e.preventDefault();
-            gameSnake.bufferedDirection = 2;
+            gameSnake.bufferedDirection = 'right';
             break;
         case 40:
             e.preventDefault();
-            gameSnake.bufferedDirection = 3;
+            gameSnake.bufferedDirection = 'down';
             break;
     }
 });
@@ -338,10 +338,58 @@ function mute() {
 
 
 //MobileControls
-
-window.addEventListener('touchmove', function(e){
-	e.preventDefault();
-	console.log(e);
+var swipeZone = document.getElementById('game-container');
+swipedetect(swipeZone, function(swipedir){
+	if(swipedir !== 'none') {
+		gameSnake.bufferedDirection = swipedir;
+	}
 });
 
 
+// credit: http://www.javascriptkit.com/javatutors/touchevents2.shtml
+function swipedetect(el, callback){
+  
+    var touchsurface = el,
+    swipedir,
+    startX,
+    startY,
+    distX,
+    distY,
+    threshold = 150, //required min distance traveled to be considered swipe
+    restraint = 100, // maximum distance allowed at the same time in perpendicular direction
+    allowedTime = 300, // maximum time allowed to travel that distance
+    elapsedTime,
+    startTime,
+    handleswipe = callback || function(swipedir){}
+  
+    touchsurface.addEventListener('touchstart', function(e){
+        var touchobj = e.changedTouches[0]
+        swipedir = 'none'
+        dist = 0
+        startX = touchobj.pageX
+        startY = touchobj.pageY
+        startTime = new Date().getTime() // record time when finger first makes contact with surface
+        e.preventDefault()
+    }, false)
+  
+    touchsurface.addEventListener('touchmove', function(e){
+        e.preventDefault() // prevent scrolling when inside DIV
+    }, false)
+  
+    touchsurface.addEventListener('touchend', function(e){
+        var touchobj = e.changedTouches[0]
+        distX = touchobj.pageX - startX // get horizontal dist traveled by finger while in contact with surface
+        distY = touchobj.pageY - startY // get vertical dist traveled by finger while in contact with surface
+        elapsedTime = new Date().getTime() - startTime // get time elapsed
+        if (elapsedTime <= allowedTime){ // first condition for awipe met
+            if (Math.abs(distX) >= threshold && Math.abs(distY) <= restraint){ // 2nd condition for horizontal swipe met
+                swipedir = (distX < 0)? 'left' : 'right' // if dist traveled is negative, it indicates left swipe
+            }
+            else if (Math.abs(distY) >= threshold && Math.abs(distX) <= restraint){ // 2nd condition for vertical swipe met
+                swipedir = (distY < 0)? 'up' : 'down' // if dist traveled is negative, it indicates up swipe
+            }
+        }
+        handleswipe(swipedir)
+        e.preventDefault()
+    }, false)
+}
