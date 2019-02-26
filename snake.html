@@ -3,13 +3,13 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Snake Game</title>
-		<meta name="viewport" content="width=device-width, initial-scale=2">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link href="snake.css" type="text/css" rel="stylesheet">
 	</head>
 	<body>
 		<div id='snake-content'>
 			<div id="score">Score: <span id="points">0</span></div>
-			<div id="game-container"></div>
+			<div id='game'><div id="game-container"></div></div>
 			<h2>Top 15 Leaderboard</h2>
 			<div id="leaderboard"></div>
 		</div>
@@ -25,6 +25,7 @@
 				<div class="cross" onclick='viewNoStart()'>x</div>
 			</div>
 		</div>
+		<div id='mute'><img src='img/sound.png' onclick='mute()' state='unmuted'/></div>
 		<script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-app.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-firestore.js"></script>
 		<script>

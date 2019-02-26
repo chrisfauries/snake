@@ -93,11 +93,10 @@ function Snake(lengthArr, currentDirection, bufferedDirection,speedValue) {
             gameOver.call(this); 
         }else if(testValid.classList.contains("apple")){
             gameApple.location.classList.remove("apple");
-//            gameApple.location.classList.add("snake");
+						gameApple.location.classList.add("snake");
             gameApple.reassign();
 						soundGrabApple.play();
 						soundBackgoundMusic.sound.playbackRate = (soundBackgoundMusic.sound.playbackRate + .005).toFixed(4);
-						console.log(soundBackgoundMusic.sound.playbackRate);
             this.updateSpeed();
             scoreUpdate.call(this);
         }else{
@@ -312,3 +311,37 @@ var soundGrabApple = new Sound('sound/grabApple.wav', false, .2);
 var soundBackgoundMusic = new Sound('sound/background.mp3', true, .1);
 var soundDeath = new Sound('sound/death.wav', false, .5);
 var soundCountdown = new Sound('sound/countdown.mp3', false, .5);
+
+
+//Mute Button
+
+function mute() {
+	var muteBtn = document.querySelector('#mute img');
+	if(muteBtn.getAttribute('state') === 'unmuted') {
+		soundChangeDirection.sound.muted = true;
+		soundGrabApple.sound.muted = true;
+		soundBackgoundMusic.sound.muted = true;
+		soundDeath.sound.muted = true;
+		soundCountdown.sound.muted = true;
+		muteBtn.setAttribute('state', 'muted');
+		muteBtn.setAttribute('src', 'img/noSound.png');
+	} else {
+		soundChangeDirection.sound.muted = false;
+		soundGrabApple.sound.muted = false;
+		soundBackgoundMusic.sound.muted = false;
+		soundDeath.sound.muted = false;
+		soundCountdown.sound.muted = false;
+		muteBtn.setAttribute('state', 'unmuted');
+		muteBtn.setAttribute('src', 'img/sound.png');
+	}
+}
+
+
+//MobileControls
+
+window.addEventListener('touchmove', function(e){
+	e.preventDefault();
+	console.log(e);
+});
+
+
