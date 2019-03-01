@@ -138,7 +138,7 @@ var gameApple = new Apple(2020);
 
 function speedScreenSize () {
 	if(window.innerWidth < 1000) {
-		return 500;
+		return 250;
 	} else {
 		return 120;
 	}
@@ -344,7 +344,7 @@ function mute() {
 }
 
 
-//MobileControls
+//MobileControls - this feature doesn't work!!!!
 var swipeZone = document;
 swipedetect(swipeZone, function(swipedir){
 	if(swipedir !== 'none') {
