@@ -252,7 +252,23 @@ var gameSessionID;
 
 function startGame() {
 	var init = document.querySelector('#inpInt');
-	if(init.value.length === 3) {
+  var regex = /[A-Z]{3}/i;
+  var banned = ['ASS', 'BAD', 'BAG', 'BED', 'COP', 'CUM', 'CUN', 'DAM', 'DIC', 'DIE', 'DIK', 'FAG',
+  'FAN', 'FAT', 'FBI', 'FCK', 'FKU', 'FOC', 'FOK', 'FQC', 'FQK', 'FQU', 'FUC', 'FUK',
+  'GAY', 'GOD', 'HAM', 'KKK', 'NAG', 'NGR', 'NIG', 'NIP', 'PEE', 'SEX', 'SHT'];
+	if(!(init.value.length === 3)) {
+    init.classList.add('red');
+    init.setAttribute('placeholder', 'Input Invalid: Must be 3 Letters');
+    init.value = '';
+  } else if(!regex.test(init.value)) {
+    init.classList.add('red');
+    init.setAttribute('placeholder', 'Input Invalid: Letters Only');
+    init.value = '';
+  } else if(banned.includes(init.value.toUpperCase())) {
+    init.classList.add('red');
+    init.setAttribute('placeholder', 'Invalid Letter Conbination');
+    init.value = '';
+  } else {
 		document.querySelector('#pop-up-bg').style.animation= 'fadeOut 3s ease forwards';
 		document.querySelector('#pop-up').style.display = 'none';
 		userInitials = inpInt.value.toUpperCase();

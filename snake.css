@@ -22,7 +22,7 @@ body {
 	background-color: #eee;
 	width: 1000px;
 	max-width: 50%;
-	height: 1000px;	
+	height: 1000px;
 	margin: 10px auto;
 }
 
@@ -47,7 +47,7 @@ body {
 #score{
 	background-color:#D29F13;
 	width: 100%;
-	height: 100px;	
+	height: 100px;
 	margin: 10px auto;
 	text-align: center;
 	font-size: 80px;
@@ -72,7 +72,7 @@ fieldset, button{
 	float: right;
 	background-color:#D29F13;
 	width: 40%;
-	height: 1000px;	
+	height: 1000px;
 	margin: 10px auto;
 	color: #3C1053;
 	font-size: 58px;
@@ -97,27 +97,27 @@ fieldset, button{
 /* pop-up */
 
 #pop-up{
-	font-family: Calibri, sans-serif; 
+	font-family: Calibri, sans-serif;
   font-weight: normal;
   color: #333;
-  position: relative; 
-  top: -1800px; 
+  position: relative;
+  top: -1800px;
   width: 500px;
 	height: 200px;
-  margin: 0 auto; 
+  margin: 0 auto;
   text-align: center;
 	color: #3C1053;
 	animation: drops 1.0s ease forwards;
 }
 
 #pop-up .container{
-  background: #EEE; 
+  background: #EEE;
   padding: 30px;
-  position: absolute; 
-  top: 150px; 
-  width: 100%; 
+  position: absolute;
+  top: 150px;
+  width: 100%;
   box-sizing: border-box;
-	
+
 }
 
 #pop-up input{
@@ -154,6 +154,11 @@ button{
   text-align: center;
   border-radius: 11px;
 	cursor: pointer;
+}
+
+.red::placeholder {
+  color: red;
+  font-weight: bold;
 }
 
 #pop-up-bg {
@@ -207,7 +212,7 @@ button{
 		margin: 0 auto;
 		zoom: 75%;
 	}
-	
+
 	#game-container {
 		position: static;
 		margin: 0 auto;
@@ -215,22 +220,22 @@ button{
 		background-color: #eee;
 		width: 70%;
 		max-width: 100%;
-		height: 100%;	
+		height: 100%;
 	}
-	
+
 	#snake-content h2{
 		margin-left: 00%;
 		text-align: center;
 		font-size: 60px;
 		position: relative;
 	}
-	
+
 	#leaderboard{
 		background-color:#D29F13;
 		position: relative;
 		width: 100%;
 		float: none;
-		height: 700px;	
+		height: 700px;
 		margin: 10px auto;
 		color: #3C1053;
 		font-size: 40px;
@@ -242,25 +247,24 @@ button{
 		zoom: 50%;
 		width: 80%
 	}
-	
+
 	#game-container {
 		width: 100%;
 
 	}
-	
+
 	#game {
 		width:1000px;
 		margin: 0 auto;
 	}
-	
+
 	#pop-up{
 		animation: dropsMobile 1.0s ease forwards;
 	}
-	
+
 		@keyframes dropsMobile {
 			0% {opacity: 0;}
 			70% { transform: translateY(1500px); }
 			100% { transform: translateY(1450px); opacity: 1;}
 		}
 }
-
