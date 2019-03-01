@@ -26,27 +26,27 @@ function gameGrid(height,width){
 //Snake & Apple Start Position and Render
 
 function Snake(lengthArr, currentDirection, bufferedDirection,speedValue) {
-	
+
 	this.lengthArr = lengthArr;
-	
+
 	this.currentDirection = currentDirection;
 	this.bufferedDirection = bufferedDirection;
 	this.speed;
 	this.speedValue = speedValue;
-	
+
 	this.shading = () =>{
     for(i=0; i<this.lengthArr.length;i++){
         snakeSegment = document.getElementById("block-number-" + this.lengthArr[i]);
         snakeSegment.classList.add("snake");
     }
 	}
-	
+
 	this.updateSpeed =() => {
     this.speedValue -= .015 * this.speedValue;
     clearInterval(this.speed);
     this.speed = setInterval(this.motion, this.speedValue);
 	}
-	
+
 	this.motion = () => {
     this.directionChange();
     if(this.currentDirection == 'right'){
@@ -67,7 +67,7 @@ function Snake(lengthArr, currentDirection, bufferedDirection,speedValue) {
 		}
     this.shading();
 	}
-	
+
 	this.directionChange = () =>{
 			switch(this.currentDirection){
 					case 'left':
@@ -86,11 +86,11 @@ function Snake(lengthArr, currentDirection, bufferedDirection,speedValue) {
 							break;
 			}
 	}
-	
+
 	this.checkAndUpdate = () => {
     var testValid = document.getElementById("block-number-" + this.lengthArr[this.lengthArr.length -1]);
         if(testValid == null || testValid.classList.contains("snake")){
-            gameOver.call(this); 
+            gameOver.call(this);
         }else if(testValid.classList.contains("apple")){
             gameApple.location.classList.remove("apple");
 						gameApple.location.classList.add("snake");
@@ -110,7 +110,7 @@ function Snake(lengthArr, currentDirection, bufferedDirection,speedValue) {
 
 function Apple(location) {
   this.location = document.getElementById('block-number-' + location);
-	
+
 	this.shade = () => {this.location.classList.add('apple')}
 
 	this.reassign = () => {
@@ -130,7 +130,7 @@ function Apple(location) {
         return 0.5 - Math.random()});
 		}
 	}
-	
+
 }
 
 var gameSnake = new Snake([2210,2211,2212,2213,2214,2215,2216,2217],'right','right', speedScreenSize());
@@ -138,7 +138,7 @@ var gameApple = new Apple(2020);
 
 function speedScreenSize () {
 	if(window.innerWidth < 1000) {
-		return 300;
+		return 500;
 	} else {
 		return 120;
 	}
@@ -176,36 +176,21 @@ function gameOver(){
     clearInterval(this.speed);
 		soundDeath.play();
 		soundBackgoundMusic.stop();
-		var num15 = document.getElementById('span152');
-		if(Number(points.innerHTML) >= (Number(num15.innerHTML) /2)) {
-			db.collection('Scores').add({
-				init: userInitials,
-				time: Date().valueOf(),
-				score: points.innerHTML
-			});
-		}
-		getScores();
-    alert("Your Score was: " + points.innerHTML + "\n press 'OK' to restart");
-    setTimeout(function(){ location.reload(); },1000);
-   
+    var finalScore;
+    fetch('https://us-central1-snake-game-1bf7b.cloudfunctions.net/gameOver?userID=' + gameSessionID)
+      .then(res => {
+        return res.json();
+      })
+      .then(data =>{
+        console.log('Final Score: ', data.score);
+        finalScore = data.score;
+        alert("Your Score was: " + finalScore + "\n press 'OK' to restart");
+        setTimeout(function(){ location.reload(); },1000);
+        return;
+      });
+
+
 }
-
-
-//FireStore
-function getScores (){
-	db.collection('Scores').get().then((scores) => {
-		var allScores = []
-		for(i=0; i< scores.docs.length; i++) {
-			allScores[i] = [scores.docs[i].data().init, scores.docs[i].data().score];
-		}
-		allScores.sort((a, b) => b[1] - a[1]);
-		leaderboardBuild(allScores);
-	});
-}
-
-getScores();
-
-
 
 
 //Points
@@ -213,13 +198,14 @@ var points = document.getElementById("points");
 var lastTime = timeStamp();
 
 function scoreUpdate(){
-    currentScore = Number(points.innerHTML);
-    valueAddedSnake = Math.pow(this.lengthArr.length, 2);
-    valueAddedSpeed = Math.pow((120 / this.speedValue), 3);
-    valueAddedTime = 5000 / (timeStamp() - lastTime);
-    lastTime = timeStamp();
-    currentScore += Math.round(valueAddedSnake * valueAddedSpeed * valueAddedTime);
-    points.innerHTML = currentScore;
+    fetch('https://us-central1-snake-game-1bf7b.cloudfunctions.net/scoreUpdate?userID=' + gameSessionID)
+      .then(res => {
+        return res.json();
+      })
+      .then(data => {
+        console.log(data);
+        points.innerHTML = data.newScore;
+      });
 }
 
 function timeStamp(){
@@ -233,12 +219,14 @@ var btnSave = document.getElementById("btnSave");
 var userInitials;
 
 
-
-
+// Fetch and Build Leaderboard
+fetch('https://us-central1-snake-game-1bf7b.cloudfunctions.net/top15scores')
+  .then(res => res.json())
+  .then(data => leaderboardBuild(data));
 
 function leaderboardBuild(arr){
     var leaderboard = document.getElementById("leaderboard");
-    for(i=0; i< 15;i++){
+    for(i=0; i< arr.length; i++){
         var columnDiv = document.createElement("div");
         leaderboard.append(columnDiv);
         leaderboard.children[i].setAttribute("id","column-" + (i+1));
@@ -251,14 +239,16 @@ function leaderboardBuild(arr){
             rowSet.innerHTML = arr[i][j];
             rowSet.classList.add("score-block");
         }
-    }  
+    }
 }
 
-
+//Dialog Box Functions
 function viewNoStart() {
 	document.querySelector('#pop-up-bg').style.display = 'none';
 	document.querySelector('#pop-up').style.display = 'none';
 }
+
+var gameSessionID;
 
 function startGame() {
 	var init = document.querySelector('#inpInt');
@@ -268,6 +258,15 @@ function startGame() {
 		userInitials = inpInt.value.toUpperCase();
     setTimeout(function(){gameSnake.speed = setInterval(gameSnake.motion, gameSnake.speedValue);},5000);
 		countdown();
+    fetch('https://us-central1-snake-game-1bf7b.cloudfunctions.net/newGameSession?init=' + userInitials)
+      .then(res => {
+        return res.json();
+      })
+      .then(data => {
+        console.log(data);
+        points.innerHTML = data.score;
+        gameSessionID = data.userID;
+      });
 	}
 }
 
@@ -275,7 +274,7 @@ function countdown() {
 	var countdownTimer = document.querySelector('#countdown');
 	countdownTimer.style.display = 'block';
 	var count = 3;
-	var counter = setInterval(function(){								
+	var counter = setInterval(function(){
 								if(countdownTimer.innerHTML === 'Begin!') {
 									countdownTimer.style.display = 'none';
 									soundBackgoundMusic.play();
@@ -356,7 +355,7 @@ swipedetect(swipeZone, function(swipedir){
 
 // credit: http://www.javascriptkit.com/javatutors/touchevents2.shtml
 function swipedetect(el, callback){
-  
+
     var touchsurface = el,
     swipedir,
     startX,
@@ -369,7 +368,7 @@ function swipedetect(el, callback){
     elapsedTime,
     startTime,
     handleswipe = callback || function(swipedir){}
-  
+
     touchsurface.addEventListener('touchstart', function(e){
         var touchobj = e.changedTouches[0]
         swipedir = 'none'
@@ -379,11 +378,11 @@ function swipedetect(el, callback){
         startTime = new Date().getTime() // record time when finger first makes contact with surface
 //        e.preventDefault()
     }, { passive: false })
-  
+
     touchsurface.addEventListener('touchmove', function(e){
         e.preventDefault() // prevent scrolling when inside DIV
     }, { passive: false })
-  
+
     touchsurface.addEventListener('touchend', function(e){
         var touchobj = e.changedTouches[0]
         distX = touchobj.pageX - startX // get horizontal dist traveled by finger while in contact with surface
