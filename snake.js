@@ -218,6 +218,9 @@ var inpInt = document.getElementById("inpInt");
 var btnSave = document.getElementById("btnSave");
 var userInitials;
 
+window.onload = function() {
+  inpInt.focus();
+}
 
 // Fetch and Build Leaderboard
 fetch('https://us-central1-snake-game-1bf7b.cloudfunctions.net/top15scores')
@@ -249,12 +252,17 @@ function viewNoStart() {
 }
 
 var gameSessionID;
+var init = document.querySelector('#inpInt');
+init.addEventListener("keyup", function(e) {
+  if (e.keyCode === 13) {
+    startGame();
+  }
+});
 
 function startGame() {
-	var init = document.querySelector('#inpInt');
   var regex = /[A-Z]{3}/i;
-  var banned = ['ASS', 'BAD', 'BAG', 'BED', 'COP', 'CUM', 'CUN', 'DAM', 'DIC', 'DIE', 'DIK', 'FAG',
-  'FAN', 'FAT', 'FBI', 'FCK', 'FKU', 'FOC', 'FOK', 'FQC', 'FQK', 'FQU', 'FUC', 'FUK',
+  var banned = ['ASS', 'BAD', 'CUM', 'CUN', 'DAM', 'DIC', 'DIE', 'DIK', 'FAG',
+  'FAT', 'FBI', 'FCK', 'FKU', 'FOC', 'FOK', 'FQC', 'FQK', 'FQU', 'FUC', 'FUK',
   'GAY', 'GOD', 'HAM', 'KKK', 'NAG', 'NGR', 'NIG', 'NIP', 'PEE', 'SEX', 'SHT'];
 	if(!(init.value.length === 3)) {
     init.classList.add('red');
@@ -285,6 +293,9 @@ function startGame() {
       });
 	}
 }
+
+
+
 
 function countdown() {
 	var countdownTimer = document.querySelector('#countdown');
